@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>暖墙 · 祝福不止于言</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root {
+  --warm-50: #fef7ee;
+  --warm-100: #fdecd5;
+  --warm-200: #fbd5ab;
+  --warm-300: #f8b877;
+  --warm-400: #f49442;
+  --warm-500: #f17a1a;
+  --warm-600: #e26010;
+  --warm-700: #ba4910;
+  --warm-800: #933a14;
+  --warm-900: #773113;
+  --rose: #e8456b;
+  --gold: #f0a830;
+  --sage: #6b9e7d;
+  --sky: #5b9bd5;
+  --lavender: #9b7ec8;
+  --coral: #e8725a;
+  --mint: #5bc4a0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--warm-50);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Noto Serif SC', serif;
+}
+
+/* Animated background */
+.bg-pattern {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(249, 180, 119, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(232, 69, 107, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(107, 158, 125, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #fef7ee 0%, #fdf6f0 100%);
+  min-height: 100vh;
+}
+
+/* Floating decorations */
+.floating-dot {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: floatDot 20s ease-in-out infinite;
+  opacity: 0.12;
+}
+.floating-dot:nth-child(1) { width: 300px; height: 300px; background: var(--warm-300); top: -50px; left: -80px; animation-delay: 0s; }
+.floating-dot:nth-child(2) { width: 200px; height: 200px; background: var(--rose); top: 30%; right: -40px; animation-delay: -5s; }
+.floating-dot:nth-child(3) { width: 250px; height: 250px; background: var(--lavender); bottom: 10%; left: 10%; animation-delay: -10s; }
+.floating-dot:nth-child(4) { width: 180px; height: 180px; background: var(--sage); top: 60%; right: 20%; animation-delay: -15s; }
+
+@keyframes floatDot {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -20px) scale(1.05); }
+  50% { transform: translate(-20px, 30px) scale(0.95); }
+  75% { transform: translate(20px, 20px) scale(1.02); }
+}
+
+/* Page transitions */
+.page { display: none; opacity: 0; transform: translateY(12px); transition: opacity 0.4s ease, transform 0.4s ease; }
+.page.active { display: block; opacity: 1; transform: translateY(0); }
+
+/* Card hover */
+.wall-card {
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.wall-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--card-accent, var(--warm-400));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+}
+.wall-card:hover::before { transform: scaleX(1); }
+.wall-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08), 0 8px 16px rgba(0,0,0,0.04);
+}
+
+/* Blessing card */
+.blessing-card {
+  transition: all 0.3s ease;
+  position: relative;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.blessing-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.04);
+  pointer-events: none;
+}
+.blessing-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+}
+
+/* Modal overlay */
+.modal-overlay {
+  background: rgba(30, 20, 10, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal-content {
+  transform: translateY(24px) scale(0.96);
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
+  opacity: 0;
+}
+.modal-overlay.show .modal-content {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* Like button animation */
+.like-btn { transition: transform 0.2s ease; }
+.like-btn:active { transform: scale(1.3); }
+.like-btn.liked { animation: likePopIn 0.4s ease; }
+@keyframes likePopIn {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.4); }
+  60% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+/* Floating action button */
+.fab {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--warm-500), var(--coral));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(241, 122, 26, 0.35);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 50;
+  border: none;
+  font-size: 24px;
+}
+.fab:hover { transform: scale(1.1) rotate(90deg); box-shadow: 0 12px 32px rgba(241, 122, 26, 0.45); }
+
+/* Status tags */
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+.tag-open { background: rgba(107, 158, 125, 0.12); color: #4a8c60; }
+.tag-closed { background: rgba(180, 160, 140, 0.15); color: #8a7a6a; }
+.tag-hidden { background: rgba(200, 190, 180, 0.15); color: #9a8a7a; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+
+/* Stagger animation for cards */
+.stagger-in { opacity: 0; transform: translateY(20px); animation: staggerFadeIn 0.5s ease forwards; }
+@keyframes staggerFadeIn { to { opacity: 1; transform: translateY(0); } }
+
+/* Search */
+.search-box {
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(0,0,0,0.06);
+  transition: all 0.3s ease;
+}
+.search-box:focus-within {
+  background: white;
+  border-color: var(--warm-400);
+  box-shadow: 0 0 0 3px rgba(241, 122, 26, 0.1);
+}
+
+/* Toast */
+.toast {
+  position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-100px);
+  background: #333; color: white; padding: 12px 24px; border-radius: 12px;
+  font-size: 14px; z-index: 9999; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Confetti button */
+.btn-warm {
+  background: linear-gradient(135deg, var(--warm-400), var(--warm-500));
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Noto Sans SC', sans-serif;
+}
+.btn-warm:hover { box-shadow: 0 8px 20px rgba(241, 122, 26, 0.3); transform: translateY(-1px); }
+
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Noto Sans SC', sans-serif;
+  color: #555;
+}
+.btn-outline:hover { border-color: var(--warm-400); color: var(--warm-600); background: rgba(241,122,26,0.04); }
+
+/* Color picker circles */
+.color-opt {
+  width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+  transition: all 0.2s ease; border: 3px solid transparent;
+  position: relative;
+}
+.color-opt:hover { transform: scale(1.15); }
+.color-opt.selected { border-color: #333; transform: scale(1.15); }
+.color-opt.selected::after {
+  content: '✓'; position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 14px; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.type-opt { flex:1; display:flex; flex-direction:column; align-items:center; padding:12px 8px; border-radius:12px; cursor:pointer; border:2px solid #eee; transition:all .2s; background:white }
+.type-opt:hover { border-color:#ccc }
+.type-opt.selected { border-color:#f49442; background:#fff8f0; box-shadow:0 2px 8px rgba(244,148,66,0.15) }
+
+/* Closed banner */
+.closed-banner {
+  background: linear-gradient(135deg, #f5efe8, #ede4d8);
+  border: 1px solid rgba(180, 160, 140, 0.3);
+  border-radius: 12px;
+}
+
+/* Table */
+.admin-table th { background: rgba(249, 180, 119, 0.08); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #8a7a6a; }
+.admin-table td { border-bottom: 1px solid rgba(0,0,0,0.04); }
+.admin-table tr:hover td { background: rgba(249, 180, 119, 0.04); }
+
+/* Input style */
+.input-warm {
+  width: 100%; padding: 12px 16px; border: 1.5px solid rgba(0,0,0,0.08);
+  border-radius: 12px; font-size: 15px; font-family: 'Noto Sans SC', sans-serif;
+  transition: all 0.3s ease; background: white; outline: none;
+}
+.input-warm:focus { border-color: var(--warm-400); box-shadow: 0 0 0 3px rgba(241, 122, 26, 0.1); }
+.input-warm::placeholder { color: #bba; }
+
+/* Paper texture for cards */
+.paper-texture {
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+}
+</style>
+</head>
+<body class="bg-pattern">
+<!-- Floating decorations -->
+<div class="floating-dot"></div>
+<div class="floating-dot"></div>
+<div class="floating-dot"></div>
+<div class="floating-dot"></div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- ==================== HEADER ==================== -->
+<header class="sticky top-0 z-40" style="background:rgba(254,247,238,0.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.04)">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+    <a onclick="showPage('home')" class="flex items-center gap-3 cursor-pointer group">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg" style="background:linear-gradient(135deg,var(--warm-400),var(--coral))">
+        <i class="fa-solid fa-heart"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold leading-tight" style="font-family:'Noto Serif SC',serif;color:#3a2a1a">暖墙</h1>
+        <p class="text-xs leading-none mt-0.5" style="color:#bba">祝福不止于言</p>
+      </div>
+    </a>
+    <div class="flex items-center gap-3">
+      <button id="headerLoginBtn" onclick="showPage('login')" class="btn-outline text-sm py-2 px-4">
+        <i class="fa-solid fa-shield-halved mr-1.5"></i>管理员
+      </button>
+      <button id="headerAdminBtn" onclick="showPage('admin')" class="btn-warm text-sm py-2 px-4 hidden">
+        <i class="fa-solid fa-gauge-high mr-1.5"></i>管理面板
+      </button>
+      <button id="headerLogoutBtn" onclick="doLogout()" class="btn-outline text-sm py-2 px-4 hidden">
+        <i class="fa-solid fa-right-from-bracket mr-1.5"></i>退出
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ==================== HOME PAGE ==================== -->
+<section id="page-home" class="page active max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <!-- Hero -->
+  <div class="text-center mb-10">
+    <h2 class="text-3xl sm:text-4xl font-black mb-3 whitespace-nowrap" style="color:#3a2a1a;font-family:'Noto Serif SC',serif">
+      每一面墙,都藏着温暖 ✨
+    </h2>
+    <p class="text-base" style="color:#8a7a6a;max-width:480px;margin:0 auto">
+      在这里留下你的祝福,让每一份心意都被看见
+    </p>
+  </div>
+  <!-- Search -->
+  <div class="search-box flex items-center gap-3 rounded-2xl px-5 py-3 max-w-lg mx-auto mb-10">
+    <i class="fa-solid fa-magnifying-glass" style="color:#bba"></i>
+    <input type="text" id="searchInput" placeholder="搜索祝福墙..." class="bg-transparent outline-none flex-1 text-sm" style="color:#555" oninput="filterWalls()">
+  </div>
+  <!-- Wall grid -->
+  <div id="wallGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  </div>
+  <!-- Empty state -->
+  <div id="emptySearch" class="hidden text-center py-16">
+    <div class="text-5xl mb-4">🔍</div>
+    <p style="color:#9a8a7a">没有找到匹配的祝福墙</p>
+  </div>
+</section>
+
+<!-- ==================== WALL DETAIL ==================== -->
+<section id="page-detail" class="page max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <button onclick="showPage('home')" class="flex items-center gap-2 text-sm mb-6 cursor-pointer" style="color:var(--warm-600);background:none;border:none;font-family:'Noto Sans SC',sans-serif">
+    <i class="fa-solid fa-arrow-left"></i> 返回所有墙
+  </button>
+  <!-- Wall header -->
+  <div id="wallHeader" class="rounded-2xl p-6 sm:p-8 mb-8 relative overflow-hidden paper-texture" style="background:white">
+    <div id="closedBanner" class="closed-banner px-4 py-3 rounded-lg mb-5 hidden">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-lock" style="color:#8a7a6a"></i>
+        <span class="text-sm" style="color:#6a5a4a">此墙已关闭,无法发布新留言</span>
+      </div>
+    </div>
+    <div class="flex items-start gap-4">
+      <div id="detailAccent" class="w-2 h-16 rounded-full flex-shrink-0" style="background:var(--warm-400)"></div>
+      <div class="flex-1">
+        <h2 id="detailTitle" class="text-2xl sm:text-3xl font-bold mb-2" style="font-family:'Noto Serif SC',serif;color:#3a2a1a"></h2>
+        <p id="detailDesc" class="mb-4" style="color:#8a7a6a"></p>
+        <div class="flex items-center gap-6 text-sm" style="color:#9a8a7a">
+          <span><i class="fa-solid fa-message mr-1.5" style="color:var(--warm-400)"></i><span id="detailMsgCount">0</span> 条留言</span>
+          <span><i class="fa-solid fa-heart mr-1.5" style="color:var(--rose)"></i><span id="detailLikeCount">0</span> 次点赞</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Blessing cards grid -->
+  <div id="blessingGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+  </div>
+  <!-- FAB -->
+  <button id="fabBtn" class="fab" onclick="openModal('postModal')" title="发布祝福">
+    <i class="fa-solid fa-plus"></i>
+  </button>
+</section>
+
+<!-- ==================== LOGIN PAGE ==================== -->
+<section id="page-login" class="page max-w-md mx-auto px-4 sm:px-6 py-16">
+  <div class="text-center mb-10">
+    <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl text-white mx-auto mb-5" style="background:linear-gradient(135deg,var(--warm-400),var(--coral))">
+      <i class="fa-solid fa-shield-halved"></i>
+    </div>
+    <h2 class="text-2xl font-bold mb-2" style="font-family:'Noto Serif SC',serif;color:#3a2a1a">管理员登录</h2>
+    <p class="text-sm" style="color:#9a8a7a">登录后可创建和管理祝福墙</p>
+  </div>
+  <div class="rounded-2xl p-8 paper-texture" style="background:white;box-shadow:0 4px 24px rgba(0,0,0,0.04)">
+    <div class="mb-5">
+      <label class="block text-sm font-medium mb-2" style="color:#6a5a4a">用户名</label>
+      <input type="text" id="loginUser" value="admin" class="input-warm" placeholder="请输入用户名">
+    </div>
+    <div class="mb-6">
+      <label class="block text-sm font-medium mb-2" style="color:#6a5a4a">密码</label>
+      <input type="password" id="loginPass" value="admin123" class="input-warm" placeholder="请输入密码">
+    </div>
+    <button onclick="doLogin()" class="btn-warm w-full py-3 text-base">登录</button>
+    <button onclick="showPage('home')" class="btn-outline w-full py-3 text-base mt-3">返回首页</button>
+  </div>
+</section>
+
+<!-- ==================== ADMIN PANEL ==================== -->
+<section id="page-admin" class="page max-w-5xl mx-auto px-4 sm:px-6 py-8">
+  <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+    <div>
+      <h2 class="text-2xl font-bold" style="font-family:'Noto Serif SC',serif;color:#3a2a1a">管理面板</h2>
+      <p class="text-sm mt-1" style="color:#9a8a7a">管理你的所有祝福墙</p>
+    </div>
+    <button onclick="openModal('createWallModal')" class="btn-warm">
+      <i class="fa-solid fa-plus mr-2"></i>创建新墙
+    </button>
+  </div>
+  <div class="rounded-2xl overflow-hidden" style="background:white;box-shadow:0 4px 24px rgba(0,0,0,0.04)">
+    <div class="overflow-x-auto">
+      <table class="w-full admin-table">
+        <thead>
+          <tr>
+            <th class="text-left px-6 py-4">墙名称</th>
+            <th class="text-left px-6 py-4">状态</th>
+            <th class="text-left px-6 py-4">留言数</th>
+            <th class="text-left px-6 py-4">创建时间</th>
+            <th class="text-right px-6 py-4">操作</th>
+          </tr>
+        </thead>
+        <tbody id="adminTableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== POST MODAL ==================== -->
+<div id="postModal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="modal-content rounded-2xl p-6 sm:p-8 w-full max-w-md paper-texture" style="background:white">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-xl font-bold" style="font-family:'Noto Serif SC',serif;color:#3a2a1a">发布祝福 ✍️</h3>
+      <button onclick="closeModal('postModal')" class="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer" style="background:rgba(0,0,0,0.04);border:none;color:#9a8a7a;font-size:16px">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="mb-5">
+      <label class="block text-sm font-medium mb-2" style="color:#6a5a4a">你的名字</label>
+      <input type="text" id="postName" class="input-warm" placeholder="留空将以「匿名」发布">
+    </div>
+    <div class="mb-6">
+      <label class="block text-sm font-medium mb-2" style="color:#6a5a4a">祝福内容</label>
+      <textarea id="postContent" class="input-warm" rows="4" placeholder="写下你的祝福吧... 💕" style="resize:vertical;min-height:100px"></textarea>
+      <div class="flex gap-2 mt-2 flex-wrap">
+        <button onclick="insertEmoji('🎉')" class="text-xl cursor-pointer hover:scale-125 transition-transform" style="background:none;border:none">🎉</button>
+        <button onclick="insertEmoji('❤️')" class="text-xl cursor-pointer hover:scale-125 transition-transform" style="background:none;border:none">❤️</button>
+        <button onclick="insertEmoji('🌟')" class="text-xl cursor-pointer hover:scale-125 transition-transform" style="background:none;border:none">🌟</button>
+        <button onclick="insertEmoji('💪')" class="text-xl cursor-pointer hover:scale-125 transition-transform" style="background:none;border:none">💪</button>
+        <button onclick="insertEmoji('🤗')" class="text-xl cursor-pointer hover:scale-125 transition-transform" style="background:none;border:none">🤗</button>
+        <button onclick="insertEmoji('🎈')" class="text-xl cursor-pointer hover:scale-125 transition-transform" style="background:none;border:none">🎈</button>
+        <button onclick="insertEmoji('🧡')" class="text-xl cursor-pointer hover:scale-125 transition-transform" style="background:none;border:none">🧡</button>
+        <button onclick="insertEmoji('🌻')" class="text-xl cursor-pointer hover:scale-125 transition-transform" style="background:none;border:none">🌻</button>
+      </div>
+    </div>
+    <div class="flex gap-3">
+      <button onclick="submitPost()" class="btn-warm flex-1 py-3">发布祝福</button>
+      <button onclick="closeModal('postModal')" class="btn-outline flex-1 py-3">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DOWNLOAD TEMPLATE MODAL ==================== -->
+<div id="downloadModal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="modal-content rounded-2xl p-6 sm:p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto" style="background:white">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-lg font-bold" style="font-family:'Noto Serif SC',serif;color:#3a2a1a">下载祝福卡片</h3>
+      <button onclick="closeModal('downloadModal')" class="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer" style="background:rgba(0,0,0,0.04);border:none;color:#9a8a7a;font-size:16px">✕</button>
+    </div>
+
+    <div class="flex flex-row gap-6">
+      <!-- Left: Template selector -->
+      <div class="flex-1">
+        <!-- Template selector -->
+        <div class="grid grid-cols-3 gap-3 mb-5">
+          <div class="tpl-card rounded-xl p-3 cursor-pointer border-2 border-transparent hover:border-gray-200 transition-all text-center" style="background:#1a1a2e" onclick="selectTemplate(0)">
+            <div class="w-full h-20 rounded-lg mb-1.5 flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#0f0c29,#24243e);color:#fff">🌙</div>
+            <p class="text-xs font-medium" style="color:#4a3a2a">星空许愿</p>
+            <p class="text-[10px]" style="color:#bba">深蓝星空 · 浪漫</p>
+          </div>
+          <div class="tpl-card rounded-xl p-3 cursor-pointer border-2 border-transparent hover:border-gray-200 transition-all text-center" style="background:#f5f0e8" onclick="selectTemplate(1)">
+            <div class="w-full h-20 rounded-lg mb-1.5 flex items-center justify-center text-xl" style="background:#f0ebe3">🌙✨</div>
+            <p class="text-xs font-medium" style="color:#4a3a2a">月夜情书</p>
+            <p class="text-[10px]" style="color:#bba">米色纸张 · 手绘</p>
+          </div>
+          <div class="tpl-card rounded-xl p-3 cursor-pointer border-2 border-transparent hover:border-gray-200 transition-all text-center" style="background:#fefefe" onclick="selectTemplate(2)">
+            <div class="w-full h-20 rounded-lg mb-1.5 flex items-center justify-center text-xl" style="background:#fff;border:1px solid #e8e8e8">💌</div>
+            <p class="text-xs font-medium" style="color:#4a3a2a">温馨信纸</p>
+            <p class="text-[10px]" style="color:#bba">横线信纸 · 温暖</p>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-3">
+          <button onclick="closeModal('downloadModal')" class="btn-outline flex-1 py-3">取消</button>
+          <button onclick="doDownload()" class="btn-warm flex-1 py-3">
+            <i class="fa-solid fa-download mr-1.5"></i>确认下载
+          </button>
+        </div>
+      </div>
+
+      <!-- Right: Preview -->
+      <div class="w-80 flex-shrink-0 flex flex-col">
+        <p class="text-sm mb-2" style="color:#6a5a4a">预览：</p>
+        <div class="rounded-xl overflow-hidden flex-1 flex items-center justify-center" style="background:#f5f0eb;min-height:400px">
+          <canvas id="dlCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CREATE WALL MODAL ==================== -->
+<div id="createWallModal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="modal-content rounded-2xl p-6 sm:p-8 w-full max-w-md paper-texture" style="background:white">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-xl font-bold" style="font-family:'Noto Serif SC',serif;color:#3a2a1a">创建祝福墙 🌈</h3>
+      <button onclick="closeModal('createWallModal')" class="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer" style="background:rgba(0,0,0,0.04);border:none;color:#9a8a7a;font-size:16px">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="mb-5">
+      <label class="block text-sm font-medium mb-2" style="color:#6a5a4a">主角 <span style="color:#bba;font-weight:400">(祝福送给谁)</span></label>
+      <input type="text" id="newWallProtagonist" class="input-warm" placeholder="例如:张小明">
+    </div>
+    <div class="mb-5">
+      <label class="block text-sm font-medium mb-2" style="color:#6a5a4a">墙标题</label>
+      <input type="text" id="newWallTitle" class="input-warm" placeholder="例如:2026 毕业季祝福墙">
+    </div>
+    <div class="mb-5">
+      <label class="block text-sm font-medium mb-2" style="color:#6a5a4a">墙描述</label>
+      <textarea id="newWallDesc" class="input-warm" rows="2" placeholder="简单描述一下这面墙的用途..." style="resize:vertical"></textarea>
+    </div>
+    <div class="mb-6">
+      <label class="block text-sm font-medium mb-3" style="color:#6a5a4a">墙类型</label>
+      <div class="flex gap-3" id="typePicker">
+        <div class="type-opt selected" data-type="birthday" onclick="pickType(this)">
+          <span class="text-2xl">🎂</span>
+          <span class="text-xs mt-1">生日</span>
+        </div>
+        <div class="type-opt" data-type="anniversary" onclick="pickType(this)">
+          <span class="text-2xl">💕</span>
+          <span class="text-xs mt-1">纪念日</span>
+        </div>
+        <div class="type-opt" data-type="blessing" onclick="pickType(this)">
+          <span class="text-2xl">🌈</span>
+          <span class="text-xs mt-1">祝福</span>
+        </div>
+      </div>
+    </div>
+    <div class="mb-6">
+      <label class="block text-sm font-medium mb-3" style="color:#6a5a4a">主题色</label>
+      <div class="flex gap-3 flex-wrap" id="colorPicker">
+        <div class="color-opt selected" data-color="#f49442" style="background:#f49442" onclick="pickColor(this)"></div>
+        <div class="color-opt" data-color="#e8456b" style="background:#e8456b" onclick="pickColor(this)"></div>
+        <div class="color-opt" data-color="#5b9bd5" style="background:#5b9bd5" onclick="pickColor(this)"></div>
+        <div class="color-opt" data-color="#6b9e7d" style="background:#6b9e7d" onclick="pickColor(this)"></div>
+        <div class="color-opt" data-color="#9b7ec8" style="background:#9b7ec8" onclick="pickColor(this)"></div>
+        <div class="color-opt" data-color="#5bc4a0" style="background:#5bc4a0" onclick="pickColor(this)"></div>
+        <div class="color-opt" data-color="#e8725a" style="background:#e8725a" onclick="pickColor(this)"></div>
+        <div class="color-opt" data-color="#f0a830" style="background:#f0a830" onclick="pickColor(this)"></div>
+        <label class="color-opt flex items-center justify-center cursor-pointer" style="background:conic-gradient(red,yellow,lime,aqua,blue,magenta,red);border:3px solid transparent" title="自定义颜色">
+          <input type="color" id="customColor" value="#f49442" class="opacity-0 absolute w-0 h-0" onchange="pickCustomColor(this)">
+          <i class="fa-solid fa-palette text-white text-xs" style="text-shadow:0 1px 3px rgba(0,0,0,0.4)"></i>
+        </label>
+      </div>
+    </div>
+    <div class="flex gap-3">
+      <button onclick="createWall()" class="btn-warm flex-1 py-3">创建</button>
+      <button onclick="closeModal('createWallModal')" class="btn-outline flex-1 py-3">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CONFIRM MODAL ==================== -->
+<div id="confirmModal" class="modal-overlay fixed inset-0 z-[60] flex items-center justify-center p-4">
+  <div class="modal-content rounded-2xl p-6 sm:p-8 w-full max-w-sm text-center" style="background:white">
+    <div class="text-4xl mb-4">⚠️</div>
+    <h3 class="text-lg font-bold mb-2" style="font-family:'Noto Serif SC',serif;color:#3a2a1a" id="confirmTitle">确认删除?</h3>
+    <p class="text-sm mb-6" style="color:#9a8a7a" id="confirmDesc">此操作不可撤销,墙上的所有留言也将被删除。</p>
+    <div class="flex gap-3">
+      <button onclick="closeModal('confirmModal')" class="btn-outline flex-1 py-3">取消</button>
+      <button id="confirmAction" class="flex-1 py-3 rounded-xl font-medium cursor-pointer text-white" style="background:var(--rose);border:none;font-family:'Noto Sans SC',sans-serif">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== STATUS MODAL ==================== -->
+<div id="statusModal" class="modal-overlay fixed inset-0 z-[60] flex items-center justify-center p-4">
+  <div class="modal-content rounded-2xl p-6 sm:p-8 w-full max-w-sm" style="background:white">
+    <h3 class="text-lg font-bold mb-4" style="font-family:'Noto Serif SC',serif;color:#3a2a1a">修改状态</h3>
+    <div class="flex flex-col gap-3" id="statusOptions">
+      <button onclick="setStatus('open')" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:bg-gray-50" style="border:1.5px solid rgba(0,0,0,0.06);background:none;font-family:'Noto Sans SC',sans-serif;font-size:14px">
+        <span class="tag tag-open"><i class="fa-solid fa-lock-open text-xs"></i> 开放</span>
+        <span style="color:#9a8a7a">允许所有人发布留言</span>
+      </button>
+      <button onclick="setStatus('closed')" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:bg-gray-50" style="border:1.5px solid rgba(0,0,0,0.06);background:none;font-family:'Noto Sans SC',sans-serif;font-size:14px">
+        <span class="tag tag-closed"><i class="fa-solid fa-lock text-xs"></i> 已关闭</span>
+        <span style="color:#9a8a7a">可浏览,不可发布</span>
+      </button>
+      <button onclick="setStatus('hidden')" class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:bg-gray-50" style="border:1.5px solid rgba(0,0,0,0.06);background:none;font-family:'Noto Sans SC',sans-serif;font-size:14px">
+        <span class="tag tag-hidden"><i class="fa-solid fa-eye-slash text-xs"></i> 隐藏</span>
+        <span style="color:#9a8a7a">不在首页展示</span>
+      </button>
+    </div>
+    <button onclick="closeModal('statusModal')" class="btn-outline w-full py-3 mt-5">取消</button>
+  </div>
+</div>
+
+<script>
+// ============ DATA ============
+const TYPE_CONFIG = {
+  birthday:   { emoji: '🎂', label: '生日' },
+  anniversary:{ emoji: '💕', label: '纪念日' },
+  blessing:   { emoji: '🌈', label: '祝福' },
+};
+
+const WALLS = [
+  { id: 1, title: '2026 毕业季祝福墙', desc: '写给即将各奔东西的你们,愿前路繁花似锦', type: 'blessing', color: '#f49442', protagonist: '', status: 'open', messages: 47, created: '2026-03-15' },
+  { id: 2, title: '张小明生日快乐', desc: '祝张小明同学 20 岁生日快乐,永远开心', type: 'birthday', color: '#e8456b', protagonist: '张小明', status: 'open', messages: 32, created: '2026-03-20' },
+  { id: 3, title: '教师节感恩墙', desc: '感谢每一位老师,您辛苦了', type: 'blessing', color: '#5b9bd5', protagonist: '', status: 'open', messages: 89, created: '2025-09-10' },
+  { id: 4, title: '新年祝福 2026', desc: '辞旧迎新,把最美好的祝愿送给你', type: 'blessing', color: '#e8725a', protagonist: '', status: 'closed', messages: 156, created: '2025-12-25' },
+  { id: 5, title: '校运动会加油', desc: '为赛场上的运动健儿们喝彩', type: 'blessing', color: '#6b9e7d', protagonist: '', status: 'open', messages: 23, created: '2026-03-25' },
+  { id: 6, title: '社团招新寄语', desc: '欢迎加入我们,一起做有趣的事', type: 'blessing', color: '#9b7ec8', protagonist: '', status: 'open', messages: 18, created: '2026-03-01' },
+  { id: 7, title: '实验室送别李老师', desc: '感恩李老师五年的悉心指导', type: 'blessing', color: '#f0a830', protagonist: '', status: 'closed', messages: 34, created: '2026-02-28' },
+  { id: 8, title: '情人节表白墙', desc: '勇敢说出你的心意', type: 'anniversary', color: '#e8456b', protagonist: '', status: 'open', messages: 67, created: '2026-02-14' },
+  { id: 9, title: '班级团建回忆录', desc: '记录我们一起走过的欢乐时光', type: 'anniversary', color: '#5bc4a0', protagonist: '', status: 'open', messages: 41, created: '2026-03-10' },
+  { id: 10, title: '考研加油墙', desc: '星光不问赶路人,时光不负有心人', type: 'blessing', color: '#5b9bd5', protagonist: '', status: 'open', messages: 73, created: '2026-01-15' },
+  { id: 11, title: '读书会寄语', desc: '为每一位热爱阅读的人点赞', type: 'blessing', color: '#9b7ec8', protagonist: '', status: 'open', messages: 12, created: '2026-03-05' },
+  { id: 12, title: '志愿者日感谢墙', desc: '感谢每一位无私奉献的志愿者', type: 'blessing', color: '#6b9e7d', protagonist: '', status: 'open', messages: 28, created: '2026-03-12' },
+  { id: 13, title: '元宵节快乐', desc: '团团圆圆,阖家幸福', type: 'anniversary', color: '#e8725a', protagonist: '', status: 'closed', messages: 45, created: '2026-02-05' },
+  { id: 14, title: '女生节祝福', desc: '愿每一个妳都闪闪发光', type: 'blessing', color: '#e8456b', protagonist: '', status: 'open', messages: 56, created: '2026-03-07' },
+  { id: 15, title: '学长学姐寄语', desc: '给大一新生的温暖建议', type: 'blessing', color: '#f0a830', protagonist: '', status: 'open', messages: 38, created: '2026-09-01' },
+  { id: 16, title: '圣诞祝福墙', desc: 'Merry Christmas & Happy New Year', type: 'anniversary', color: '#6b9e7d', protagonist: '', status: 'closed', messages: 92, created: '2025-12-20' },
+  { id: 17, title: '端午节安康', desc: '粽叶飘香,愿一切顺遂', type: 'anniversary', color: '#5bc4a0', protagonist: '', status: 'open', messages: 19, created: '2026-06-10' },
+  { id: 18, title: '毕业旅行寄语', desc: '在路上遇见更好的自己', type: 'blessing', color: '#5b9bd5', protagonist: '', status: 'open', messages: 25, created: '2026-06-20' },
+  { id: 19, title: '感谢室友四年', desc: '四年同窗,一生朋友', type: 'anniversary', color: '#9b7ec8', protagonist: '', status: 'open', messages: 16, created: '2026-06-15' },
+  { id: 20, title: '中秋节快乐', desc: '月圆人团圆,思念在心间', type: 'anniversary', color: '#f49442', protagonist: '', status: 'closed', messages: 63, created: '2025-09-17' },
+  { id: 21, title: '入职一年感言', desc: '与团队一起成长的这一年', type: 'anniversary', color: '#e8725a', protagonist: '', status: 'hidden', messages: 8, created: '2026-01-10' },
+  { id: 22, title: '项目上线庆祝', desc: '历时三个月,终于上线了!', type: 'anniversary', color: '#f0a830', protagonist: '', status: 'open', messages: 31, created: '2026-03-18' },
+  { id: 23, title: '母亲节感恩墙', desc: '妈妈,您辛苦了,我爱您', type: 'blessing', color: '#e8456b', protagonist: '', status: 'open', messages: 112, created: '2026-05-10' },
+  { id: 24, title: '军训寄语', desc: '骄阳下的青春最闪亮', type: 'blessing', color: '#5b9bd5', protagonist: '', status: 'open', messages: 44, created: '2026-09-05' },
+  { id: 25, title: '万圣节嗨起来', desc: 'Trick or Treat! 不给糖就捣蛋', type: 'anniversary', color: '#9b7ec8', protagonist: '', status: 'open', messages: 37, created: '2026-10-31' },
+  { id: 26, title: '期末加油', desc: '逢考必过,科科优秀', type: 'blessing', color: '#f49442', protagonist: '', status: 'open', messages: 51, created: '2026-06-01' },
+];
+
+const BLESSINGS = {
+  1: [
+    { id: 1, name: '小鹿', text: '四年时光匆匆而过,但那些在图书馆一起复习到闭馆的夜晚,操场上跑步的黄昏,都会是最珍贵的记忆 🌅 愿大家前程似锦!', time: '3月27日 22:15', likes: 23 },
+    { id: 2, name: '匿名', text: '虽然我们不同专业,但每次在食堂偶遇你都会笑着打招呼,谢谢你的温暖。毕业快乐 ✨', time: '3月27日 20:30', likes: 15 },
+    { id: 3, name: '阿杰', text: '兄弟们,我们说好的十年之约别忘了!到时候大家都混好了,一定要再聚 🍻', time: '3月27日 18:45', likes: 42 },
+    { id: 4, name: '思思', text: '谢谢我的室友们四年来的包容和陪伴,虽然总说我打呼噜 😂 但我知道你们偷偷给我盖过被子 💕', time: '3月26日 23:10', likes: 38 },
+    { id: 5, name: '匿名', text: '致那个坐在图书馆第三排靠窗的同学:你的侧影很好看,我从来没有勇气跟你说这句话。祝好 📖', time: '3月26日 21:00', likes: 67 },
+    { id: 6, name: '老王', text: '作为你们的辅导员,看着你们从青涩到成熟,真的很欣慰。不管走到哪里,这里永远是你们的家 🏠', time: '3月26日 16:30', likes: 89 },
+    { id: 7, name: '小微', text: '感谢所有一起参加社团的朋友们,那些排练到深夜、演出时紧张到手抖的日子,现在想想都是幸福 🎭', time: '3月25日 19:20', likes: 28 },
+    { id: 8, name: '匿名', text: '大学最幸运的事就是遇到了你们。不说再见,因为我们一定会再见 🌸', time: '3月25日 15:45', likes: 55 },
+    { id: 9, name: '大卫', text: '毕业不是终点,是新旅程的起点。各位,江湖再见!愿你们都能找到自己热爱的事业 💪', time: '3月24日 22:00', likes: 31 },
+    { id: 10, name: '林子', text: '给未来的自己:希望五年后回看这段文字时,你已经成为了想成为的人 🌟', time: '3月24日 14:30', likes: 44 },
+  ],
+};
+
+let currentUser = null;
+let currentWall = null;
+// Type picker for create modal
+let editingWallId = null;
+
+// ============ NAVIGATION ============
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+    p.style.display = 'none';
+  });
+  const page = document.getElementById('page-' + name);
+  if (page) {
+    // Force reflow before adding active class for transition
+    page.style.display = 'block';
+    void page.offsetHeight;
+    page.classList.add('active');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // FAB visibility
+  document.getElementById('fabBtn').style.display = (name === 'detail') ? 'flex' : 'none';
+
+  // Admin nav
+  document.getElementById('headerLoginBtn').classList.toggle('hidden', !!currentUser);
+  document.getElementById('headerAdminBtn').classList.toggle('hidden', !currentUser);
+  document.getElementById('headerLogoutBtn').classList.toggle('hidden', !currentUser);
+
+  if (name === 'home') renderWalls();
+  if (name === 'admin') renderAdmin();
+}
+
+// ============ TOAST ============
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============ RENDER WALLS ============
+function renderWalls(filter = '') {
+  const grid = document.getElementById('wallGrid');
+  const q = filter.toLowerCase();
+  const visible = WALLS.filter(w => w.status !== 'hidden' && (
+    !q || w.title.toLowerCase().includes(q) || w.desc.toLowerCase().includes(q)
+  )).sort((a, b) => new Date(b.created) - new Date(a.created));
+  document.getElementById('emptySearch').classList.toggle('hidden', visible.length > 0);
+
+  grid.innerHTML = visible.map((w, i) => `
+    <div class="wall-card rounded-2xl p-6 paper-texture stagger-in" style="--card-accent:${w.color};background:white;animation-delay:${i * 0.05}s;box-shadow:0 2px 12px rgba(0,0,0,0.03)" onclick="openWall(${w.id})">
+      <h3 class="text-lg font-bold mb-2 leading-snug flex items-center gap-2" style="font-family:'Noto Serif SC',serif;color:#3a2a1a">
+        <span class="text-xl">${TYPE_CONFIG[w.type]?.emoji || '🌈'}</span>
+        <span>${w.title}</span>
+      </h3>
+      <p class="text-sm mb-4 leading-relaxed" style="color:#9a8a7a;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${w.desc}</p>
+      <div class="flex items-center gap-4 text-xs" style="color:#bba">
+        <span><i class="fa-solid fa-message mr-1"></i>${w.messages}</span>
+        <span><i class="fa-regular fa-calendar mr-1"></i>${w.created}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterWalls() {
+  renderWalls(document.getElementById('searchInput').value);
+}
+
+// ============ OPEN WALL ============
+function openWall(id) {
+  currentWall = WALLS.find(w => w.id === id);
+  if (!currentWall) return;
+
+  // Populate header
+  document.getElementById('detailTitle').textContent = currentWall.title;
+  document.getElementById('detailDesc').textContent = currentWall.desc;
+  document.getElementById('detailAccent').style.background = currentWall.color;
+  document.getElementById('detailMsgCount').textContent = currentWall.messages;
+  document.getElementById('detailLikeCount').textContent = 0;
+
+  // Closed banner
+  document.getElementById('closedBanner').classList.toggle('hidden', currentWall.status !== 'closed');
+
+  // Blessings
+  const blessings = BLESSINGS[id] || generateMockBlessings();
+  const totalLikes = blessings.reduce((s, b) => s + b.likes, 0);
+  document.getElementById('detailLikeCount').textContent = totalLikes;
+
+  const grid = document.getElementById('blessingGrid');
+  grid.innerHTML = blessings.map((b, i) => `
+    <div class="blessing-card p-5 paper-texture stagger-in" style="animation-delay:${i * 0.06}s" data-id="${b.id}">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs text-white font-bold" style="background:${currentWall.color}">${(b.name === '匿名' ? '匿' : b.name[0])}</div>
+        <div>
+          <span class="text-sm font-medium" style="color:#4a3a2a">${b.name}</span>
+          <span class="text-xs ml-2" style="color:#bba">${b.time}</span>
+        </div>
+      </div>
+      <p class="text-sm leading-relaxed mb-4" style="color:#5a4a3a">${b.text}</p>
+      <div class="flex items-center justify-between pt-3" style="border-top:1px solid rgba(0,0,0,0.04)">
+        <button class="like-btn flex items-center gap-1.5 text-xs cursor-pointer ${b.liked ? 'liked' : ''}" style="background:none;border:none;font-family:'Noto Sans SC',sans-serif;color:${b.liked ? 'var(--rose)' : '#bba'}" onclick="toggleLike(this, ${b.likes})">
+          <i class="fa-${b.liked ? 'solid' : 'regular'} fa-heart"></i>
+          <span>${b.likes}</span>
+        </button>
+        <button onclick="openDownloadModal(this)" class="text-xs cursor-pointer flex items-center gap-1" style="background:none;border:none;color:#bba;font-family:'Noto Sans SC',sans-serif">
+          <i class="fa-solid fa-download"></i> 下载
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  showPage('detail');
+
+  // Re-apply closed state after showPage resets fab visibility
+  const isClosed = currentWall.status === 'closed';
+  document.getElementById('fabBtn').style.display = isClosed ? 'none' : 'flex';
+}
+
+function generateMockBlessings() {
+  const names = ['小确幸', '匿名', '暖暖', '大橘', '匿名', '星星', '小雨', '匿名', '阿飞', '麦子'];
+  const texts = [
+    '愿所有的美好都如期而至,愿所有的幸运都不期而遇 🌸',
+    '谢谢你出现在我的生命里,让平凡的日子有了光芒 ✨',
+    '生活明朗,万物可爱,你也是 💕',
+    '未来的日子,愿你被温柔以待 🧡',
+    '你是最棒的存在,永远相信这一点 🌟',
+    '有些话说不出口,但每一句祝福都是真心的 🤗',
+    '愿你眼里有光,心中有爱,脚下有路 🌻',
+    '时间会把最好的人留在身边 🎈',
+    '相遇就是缘分,珍惜当下 💪',
+    '世界很大,但幸好有你 🎉',
+  ];
+  const times = ['3月27日 21:30', '3月27日 19:15', '3月26日 23:45', '3月26日 17:20', '3月25日 22:00', '3月25日 14:30', '3月24日 20:10', '3月24日 11:00', '3月23日 19:45', '3月23日 09:30'];
+  return names.map((n, i) => ({ id: i + 1, name: n, text: texts[i], time: times[i], likes: Math.floor(Math.random() * 60) + 5 }));
+}
+
+// ============ LIKE ============
+function toggleLike(btn, currentLikes) {
+  const isLiked = btn.classList.toggle('liked');
+  const icon = btn.querySelector('i');
+  const count = btn.querySelector('span');
+  if (isLiked) {
+    icon.className = 'fa-solid fa-heart';
+    btn.style.color = 'var(--rose)';
+    count.textContent = currentLikes + 1;
+  } else {
+    icon.className = 'fa-regular fa-heart';
+    btn.style.color = '#bba';
+    count.textContent = currentLikes;
+  }
+}
+
+// downloadCard removed - using openDownloadModal now
+
+// ============ POST ============
+function insertEmoji(emoji) {
+  const ta = document.getElementById('postContent');
+  const start = ta.selectionStart;
+  ta.value = ta.value.slice(0, start) + emoji + ta.value.slice(ta.selectionEnd);
+  ta.focus();
+  ta.selectionStart = ta.selectionEnd = start + emoji.length;
+}
+
+function submitPost() {
+  const content = document.getElementById('postContent').value.trim();
+  if (!content) { showToast('请输入祝福内容 ✍️'); return; }
+  const name = document.getElementById('postName').value.trim() || '匿名';
+
+  // Add to grid
+  const grid = document.getElementById('blessingGrid');
+  const now = new Date();
+  const timeStr = `${now.getMonth()+1}月${now.getDate()}日 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const card = document.createElement('div');
+  card.className = 'blessing-card p-5 paper-texture stagger-in';
+  card.innerHTML = `
+    <div class="flex items-center gap-2 mb-3">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs text-white font-bold" style="background:${currentWall.color}">${name[0]}</div>
+      <div>
+        <span class="text-sm font-medium" style="color:#4a3a2a">${name}</span>
+        <span class="text-xs ml-2" style="color:#bba">${timeStr}</span>
+      </div>
+    </div>
+    <p class="text-sm leading-relaxed mb-4" style="color:#5a4a3a">${content}</p>
+    <div class="flex items-center justify-between pt-3" style="border-top:1px solid rgba(0,0,0,0.04)">
+      <button class="like-btn flex items-center gap-1.5 text-xs cursor-pointer" style="background:none;border:none;font-family:'Noto Sans SC',sans-serif;color:#bba" onclick="toggleLike(this, 0)">
+        <i class="fa-regular fa-heart"></i><span>0</span>
+      </button>
+      <button onclick="openDownloadModal(this)" class="text-xs cursor-pointer flex items-center gap-1" style="background:none;border:none;color:#bba;font-family:'Noto Sans SC',sans-serif">
+        <i class="fa-solid fa-download"></i> 下载
+      </button>
+    </div>`;
+  grid.prepend(card);
+
+  document.getElementById('postContent').value = '';
+  document.getElementById('postName').value = '';
+  closeModal('postModal');
+  showToast('祝福发布成功 🎉');
+}
+
+// ============ MODAL ============
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
+});
+
+// ============ AUTH ============
+function doLogin() {
+  const u = document.getElementById('loginUser').value;
+  const p = document.getElementById('loginPass').value;
+  if (u === 'admin' && p === 'admin123') {
+    currentUser = { name: 'admin' };
+    showToast('登录成功 👋');
+    showPage('admin');
+  } else {
+    showToast('用户名或密码错误');
+  }
+}
+
+function doLogout() {
+  currentUser = null;
+  showToast('已退出登录');
+  showPage('home');
+}
+
+// ============ ADMIN ============
+function renderAdmin() {
+  const tbody = document.getElementById('adminTableBody');
+  tbody.innerHTML = WALLS.map(w => `
+    <tr>
+      <td class="px-6 py-4">
+        <div class="flex items-center gap-3">
+          <span class="text-lg">${TYPE_CONFIG[w.type]?.emoji || '🌈'}</span>
+          <div>
+            <div class="text-sm font-medium" style="color:#3a2a1a">${w.title}</div>
+            <div class="text-xs mt-0.5" style="color:#bba">${w.desc.slice(0, 30)}...</div>
+          </div>
+        </div>
+      </td>
+      <td class="px-6 py-4">
+        <span class="tag tag-${w.status}">${{open:'开放',closed:'已关闭',hidden:'隐藏'}[w.status]}</span>
+      </td>
+      <td class="px-6 py-4 text-sm" style="color:#6a5a4a">${w.messages}</td>
+      <td class="px-6 py-4 text-sm" style="color:#9a8a7a">${w.created}</td>
+      <td class="px-6 py-4 text-right">
+        <div class="flex items-center justify-end gap-2">
+          <button onclick="openStatusModal(${w.id})" class="text-xs cursor-pointer px-3 py-1.5 rounded-lg transition-all hover:bg-gray-50" style="background:none;border:1px solid rgba(0,0,0,0.08);color:#6a5a4a;font-family:'Noto Sans SC',sans-serif">
+            <i class="fa-solid fa-pen-to-square mr-1"></i>状态
+          </button>
+          <button onclick="confirmDelete(${w.id})" class="text-xs cursor-pointer px-3 py-1.5 rounded-lg transition-all hover:bg-red-50" style="background:none;border:1px solid rgba(232,69,107,0.2);color:var(--rose);font-family:'Noto Sans SC',sans-serif">
+            <i class="fa-solid fa-trash-can mr-1"></i>删除
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ============ CREATE WALL ============
+let selectedType = 'birthday';
+let selectedColor = '#f49442';
+
+function pickType(el) {
+  document.querySelectorAll('.type-opt').forEach(t => t.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedType = el.dataset.type;
+}
+
+function pickColor(el) {
+  document.querySelectorAll('.color-opt').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedColor = el.dataset.color;
+}
+
+function pickCustomColor(input) {
+  document.querySelectorAll('.color-opt').forEach(c => c.classList.remove('selected'));
+  input.closest('.color-opt').classList.add('selected');
+  selectedColor = input.value;
+}
+
+function createWall() {
+  const title = document.getElementById('newWallTitle').value.trim();
+  const desc = document.getElementById('newWallDesc').value.trim();
+  const protagonist = document.getElementById('newWallProtagonist').value.trim();
+  if (!title) { showToast('请输入墙标题'); return; }
+  if (!desc) { showToast('请输入墙描述'); return; }
+
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  WALLS.unshift({
+    id: Date.now(),
+    title, desc,
+    type: selectedType,
+    color: selectedColor,
+    protagonist: protagonist || title,
+    status: 'open',
+    messages: 0,
+    created: dateStr
+  });
+
+  document.getElementById('newWallTitle').value = '';
+  document.getElementById('newWallDesc').value = '';
+  document.getElementById('newWallProtagonist').value = '';
+  closeModal('createWallModal');
+  renderAdmin();
+  showToast('祝福墙创建成功 🎉');
+}
+
+// ============ DELETE ============
+function confirmDelete(id) {
+  editingWallId = id;
+  openModal('confirmModal');
+  document.getElementById('confirmAction').onclick = () => {
+    const idx = WALLS.findIndex(w => w.id === id);
+    if (idx > -1) WALLS.splice(idx, 1);
+    closeModal('confirmModal');
+    renderAdmin();
+    showToast('已删除');
+  };
+}
+
+// ============ STATUS ============
+function openStatusModal(id) {
+  editingWallId = id;
+  openModal('statusModal');
+}
+
+function setStatus(status) {
+  const wall = WALLS.find(w => w.id === editingWallId);
+  if (wall) wall.status = status;
+  closeModal('statusModal');
+  renderAdmin();
+  showToast('状态已更新');
+}
+
+// ============ DOWNLOAD WITH TEMPLATE ============
+let downloadCardData = null;
+let currentTplIdx = 0;
+
+function openDownloadModal(btn) {
+  const card = btn.closest('.blessing-card');
+  const name = card.querySelector('.text-sm.font-medium').textContent;
+  const text = card.querySelector('p.text-sm.leading-relaxed').textContent;
+  const time = card.querySelector('.text-xs.ml-2')?.textContent || '';
+  downloadCardData = { name, text, time };
+
+  // Default template
+  currentTplIdx = 0;
+  updateTemplateSelection();
+
+  openModal('downloadModal');
+  setTimeout(() => {
+    renderTemplatePreview();
+    renderAllThumbnails();
+  }, 100);
+}
+
+function updateTemplateSelection() {
+  document.querySelectorAll('.tpl-card').forEach((c, i) => {
+    if (i === currentTplIdx) {
+      c.style.border = '2px solid var(--warm-500)';
+      c.style.background = i >= 3 ? '#fff0f5' : '#fff9f0';
+    } else {
+      c.style.border = '2px solid transparent';
+      c.style.background = '';
+    }
+  });
+}
+
+function selectTemplate(idx) {
+  currentTplIdx = idx;
+  updateTemplateSelection();
+  renderTemplatePreview();
+}
+
+function renderAllThumbnails() {
+  // Thumbnails are CSS-only, no canvas rendering needed
+}
+
+function renderTemplatePreview() {
+  const canvas = document.getElementById('dlCanvas');
+  const ctx = canvas.getContext('2d');
+  const recipient = currentWall?.protagonist || 'Ta';
+  const content = downloadCardData?.text || '';
+  const sender = downloadCardData?.name || '匿名';
+  const time = downloadCardData?.time || '';
+  const color = currentWall?.color || '#f49442';
+
+  const W = 800, H = 1000;
+  canvas.width = W * 2; canvas.height = H * 2;
+  canvas.style.width = '100%';
+  canvas.style.height = 'auto';
+  canvas.style.maxHeight = '400px';
+  canvas.style.display = 'block';
+  ctx.scale(2, 2);
+
+  // Seeded random - shared by templates that need it
+  const rng = (seed) => { let s = seed; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; };
+
+  // Auto-size font based on content length
+  const autoFontSize = (text, baseFont, maxSize, minSize) => {
+    const len = text.length;
+    if (len <= 30) return maxSize;
+    if (len <= 60) return baseFont;
+    if (len <= 120) return Math.max(minSize, baseFont - 3);
+    return minSize;
+  };
+  const contentFont = autoFontSize(content, 30, 36, 26);
+  const contentLineHeight = contentFont + 18;
+
+  // Templates
+  const templates = [
+    // 0: 星空许愿
+    () => {
+      // Deep blue-purple gradient
+      const grad = ctx.createLinearGradient(0, 0, W * 0.3, H);
+      grad.addColorStop(0, '#0f0c29'); grad.addColorStop(0.5, '#1a1a4e'); grad.addColorStop(1, '#24243e');
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+
+      // Stars
+      const rand = rng(42);
+      for (let i = 0; i < 80; i++) {
+        const sx = rand() * W, sy = rand() * H, sr = rand() * 2.5 + 0.3;
+        ctx.fillStyle = `rgba(255,255,255,${rand() * 0.6 + 0.2})`;
+        ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // Glow behind text
+      const glow = ctx.createRadialGradient(W / 2, 200, 0, W / 2, 200, 300);
+      glow.addColorStop(0, color + '30'); glow.addColorStop(1, 'transparent');
+      ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+
+      // Shooting star
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(580, 80); ctx.lineTo(500, 130); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.beginPath(); ctx.arc(500, 130, 2, 0, Math.PI * 2); ctx.fill();
+
+      // Moon
+      ctx.fillStyle = '#fffbe8'; ctx.globalAlpha = 0.15;
+      ctx.beginPath(); ctx.arc(650, 120, 60, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 0.08;
+      ctx.beginPath(); ctx.arc(650, 120, 90, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // Recipient
+      ctx.fillStyle = '#fff'; ctx.globalAlpha = 0.6;
+      ctx.font = '13px "Noto Sans SC", sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('✦  致  ✦', W / 2, 200);
+      ctx.globalAlpha = 1;
+      ctx.font = 'bold 30px "Noto Serif SC", serif';
+      ctx.fillText(recipient, W / 2, 245);
+
+      // Content - auto-sized, centered
+      ctx.fillStyle = 'rgba(255,255,255,0.88)';
+      wrapText(ctx, content, W / 2, 340, 520, contentLineHeight, contentFont + 'px "Noto Serif SC", serif');
+
+      // Sender - right bottom
+      ctx.textAlign = 'right';
+      ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = '46px "Noto Sans SC", sans-serif';
+      ctx.fillText('来自 ' + sender, W - 80, H - 120);
+      ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.font = '32px "Noto Sans SC", sans-serif';
+      ctx.fillText(time, W - 80, H - 75);
+    },
+    // 1: 月夜情书
+    () => {
+      // Paper texture background
+      ctx.fillStyle = '#f5f0e6';
+      ctx.fillRect(0, 0, W, H);
+      
+      // Paper grain
+      ctx.fillStyle = '#e8e0d5';
+      for (let i = 0; i < 300; i++) {
+        ctx.fillRect(Math.random() * W, Math.random() * H, 1, 1);
+      }
+
+      // Crescent moon
+      ctx.strokeStyle = '#4a4a4a'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(650, 120, 50, -Math.PI * 0.7, Math.PI * 0.7, true);
+      ctx.quadraticCurveTo(630, 120, 650, 170);
+      ctx.stroke();
+
+      // Stars - 4-pointed hand-drawn style
+      const drawStar = (x, y, size) => {
+        ctx.strokeStyle = '#4a4a4a'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(x, y - size); ctx.lineTo(x + size * 0.2, y - size * 0.2);
+        ctx.lineTo(x + size, y); ctx.lineTo(x + size * 0.2, y + size * 0.2);
+        ctx.lineTo(x, y + size); ctx.lineTo(x - size * 0.2, y + size * 0.2);
+        ctx.lineTo(x - size, y); ctx.lineTo(x - size * 0.2, y - size * 0.2);
+        ctx.closePath(); ctx.stroke(); ctx.fillStyle = '#f5f0e6'; ctx.fill();
+      };
+      drawStar(120, 100, 12); drawStar(280, 150, 8); drawStar(520, 80, 10);
+      drawStar(720, 280, 9); drawStar(150, 400, 7); drawStar(680, 450, 11);
+      drawStar(100, 650, 8); drawStar(750, 700, 10); drawStar(200, 850, 9);
+
+      // Recipient
+      ctx.fillStyle = '#6b5a4a'; ctx.textAlign = 'center';
+      ctx.font = 'bold 26px "Noto Serif SC", serif';
+      ctx.fillText('致 ' + recipient, W / 2, 280);
+
+      // Content - auto-sized, centered
+      ctx.font = contentFont + 'px "Noto Serif SC", serif';
+      wrapText(ctx, content, W / 2, 340, 520, contentLineHeight, contentFont + 'px "Noto Serif SC", serif');
+
+      // Sender - right bottom
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#8a7a6a'; ctx.font = '46px "Noto Sans SC", sans-serif';
+      ctx.fillText('—— ' + sender, W - 80, H - 120);
+      ctx.fillStyle = '#a89a8a'; ctx.font = '33px "Noto Sans SC", sans-serif';
+      ctx.fillText(time, W - 80, H - 75);
+    },
+    // 2: 温馨信纸
+    () => {
+      // Warm white paper
+      ctx.fillStyle = '#fffef8';
+      ctx.fillRect(0, 0, W, H);
+
+      // Horizontal ruled lines
+      ctx.strokeStyle = '#e8e0d0'; ctx.lineWidth = 1;
+      for (let y = 180; y < H - 100; y += 42) {
+        ctx.beginPath(); ctx.moveTo(80, y); ctx.lineTo(W - 80, y); ctx.stroke();
+      }
+
+      // Red margin line
+      ctx.strokeStyle = '#e8b4b4'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(130, 140); ctx.lineTo(130, H - 80); ctx.stroke();
+
+      // Top decorative banner
+      ctx.fillStyle = color; ctx.globalAlpha = 0.08;
+      ctx.fillRect(0, 0, W, 130);
+      ctx.globalAlpha = 1;
+
+      // Decorative dots in header
+      ctx.fillStyle = color; ctx.globalAlpha = 0.2;
+      for (let i = 0; i < 8; i++) {
+        ctx.beginPath(); ctx.arc(160 + i * 65, 65, 3, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      // "To" label
+      ctx.fillStyle = color; ctx.globalAlpha = 0.7;
+      ctx.font = '16px "Noto Sans SC", sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText('To:', 150, 170);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#3a2a1a'; ctx.font = 'bold 30px "Noto Serif SC", serif';
+      ctx.fillText(recipient, 200, 173);
+
+      // Content on the ruled lines
+      ctx.fillStyle = '#4a3a2a';
+      wrapText(ctx, content, W / 2, 220, 480, 42, contentFont + 'px "Noto Serif SC", serif');
+
+      // Sender - right bottom
+      ctx.textAlign = 'right';
+      ctx.fillStyle = color; ctx.globalAlpha = 0.15;
+      ctx.beginPath();
+      ctx.moveTo(W - 80, H - 180);
+      ctx.quadraticCurveTo(W - 120, H - 150, W - 80, H - 120);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = '#8a7a6a'; ctx.font = '46px "Noto Sans SC", sans-serif';
+      ctx.fillText('—— ' + sender, W - 80, H - 120);
+      ctx.fillStyle = '#a89a8a'; ctx.font = '33px "Noto Sans SC", sans-serif';
+      ctx.fillText(time, W - 80, H - 75);
+    }
+  ];
+  if (templates[currentTplIdx]) templates[currentTplIdx]();
+}
+
+function doDownload() {
+  const canvas = document.getElementById('dlCanvas');
+  const link = document.createElement('a');
+  link.download = `祝福卡片_${Date.now()}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  closeModal('downloadModal');
+  showToast('卡片已保存到本地 📥');
+}
+
+// Canvas helpers
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+function roundRectTop(ctx, x, y, w, h) {
+  const r = 24;
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h);
+  ctx.lineTo(x, y + h);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+function roundRectBottom(ctx, x, y, w, h) {
+  const r = 24;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x + w, y);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.closePath();
+}
+function roundRectLeft(ctx, x, y, w, h) {
+  const r = 3;
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w, y);
+  ctx.lineTo(x + w, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+function wrapText(ctx, text, x, y, maxWidth, lineHeight, font) {
+  ctx.font = font;
+  const chars = text.split('');
+  let line = '';
+  let cy = y;
+  for (let i = 0; i < chars.length; i++) {
+    const test = line + chars[i];
+    if (ctx.measureText(test).width > maxWidth && line) {
+      ctx.fillText(line, x, cy);
+      line = chars[i];
+      cy += lineHeight;
+    } else {
+      line = test;
+    }
+  }
+  ctx.fillText(line, x, cy);
+}
+function drawStar(ctx, cx, cy, r) {
+  ctx.beginPath();
+  for (let i = 0; i < 5; i++) {
+    const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+    const px = cx + Math.cos(angle) * r;
+    const py = cy + Math.sin(angle) * r;
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.fill();
+}
+function shiftColor(hex, amount) {
+  let r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+  r = Math.min(255, r + amount); g = Math.min(255, g + amount); b = Math.min(255, b + amount);
+  return '#' + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('');
+}
+
+// ============ INIT ============
+renderWalls();
+</script>
+</body>
+</html>
