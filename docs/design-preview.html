@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>暖墙 · 祝福不止于言</title>
+<title>BlessingWall</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -301,7 +301,7 @@ h1, h2, h3, h4 {
         <i class="fa-solid fa-heart"></i>
       </div>
       <div>
-        <h1 class="text-xl font-bold leading-tight" style="font-family:'Noto Serif SC',serif;color:#3a2a1a">暖墙</h1>
+        <h1 class="text-xl font-bold leading-tight" style="font-family:'Noto Serif SC',serif;color:#3a2a1a">BlessingWall</h1>
         <p class="text-xs leading-none mt-0.5" style="color:#bba">祝福不止于言</p>
       </div>
     </a>
@@ -449,6 +449,7 @@ h1, h2, h3, h4 {
       <label class="block text-sm font-medium mb-2" style="color:#6a5a4a">祝福内容</label>
       <textarea id="postContent" class="input-warm" rows="4" placeholder="写下你的祝福吧... 💕" style="resize:vertical;min-height:100px"></textarea>
       <div class="flex gap-2 mt-2 flex-wrap">
+        <button onclick="insertEmoji('🎂')" class="text-xl cursor-pointer hover:scale-125 transition-transform" style="background:none;border:none">🎂</button>
         <button onclick="insertEmoji('🎉')" class="text-xl cursor-pointer hover:scale-125 transition-transform" style="background:none;border:none">🎉</button>
         <button onclick="insertEmoji('❤️')" class="text-xl cursor-pointer hover:scale-125 transition-transform" style="background:none;border:none">❤️</button>
         <button onclick="insertEmoji('🌟')" class="text-xl cursor-pointer hover:scale-125 transition-transform" style="background:none;border:none">🌟</button>
@@ -1099,19 +1100,6 @@ function renderTemplatePreview() {
       glow.addColorStop(0, color + '30'); glow.addColorStop(1, 'transparent');
       ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
 
-      // Shooting star
-      ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(580, 80); ctx.lineTo(500, 130); ctx.stroke();
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
-      ctx.beginPath(); ctx.arc(500, 130, 2, 0, Math.PI * 2); ctx.fill();
-
-      // Moon
-      ctx.fillStyle = '#fffbe8'; ctx.globalAlpha = 0.15;
-      ctx.beginPath(); ctx.arc(650, 120, 60, 0, Math.PI * 2); ctx.fill();
-      ctx.globalAlpha = 0.08;
-      ctx.beginPath(); ctx.arc(650, 120, 90, 0, Math.PI * 2); ctx.fill();
-      ctx.globalAlpha = 1;
-
       // Recipient
       ctx.fillStyle = '#fff'; ctx.globalAlpha = 0.6;
       ctx.font = '13px "Noto Sans SC", sans-serif'; ctx.textAlign = 'center';
@@ -1124,12 +1112,12 @@ function renderTemplatePreview() {
       ctx.fillStyle = 'rgba(255,255,255,0.88)';
       wrapText(ctx, content, W / 2, 340, 520, contentLineHeight, contentFont + 'px "Noto Serif SC", serif');
 
-      // Sender - right bottom
+      // Sender - right bottom (name + date only)
       ctx.textAlign = 'right';
-      ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = '46px "Noto Sans SC", sans-serif';
-      ctx.fillText('来自 ' + sender, W - 80, H - 120);
-      ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.font = '32px "Noto Sans SC", sans-serif';
-      ctx.fillText(time, W - 80, H - 75);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = '33px "Noto Sans SC", sans-serif';
+      ctx.fillText(sender, W - 80, H - 120);
+      ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.font = '24px "Noto Sans SC", sans-serif';
+      ctx.fillText(time, W - 80, H - 85);
     },
     // 1: 月夜情书
     () => {
@@ -1143,11 +1131,15 @@ function renderTemplatePreview() {
         ctx.fillRect(Math.random() * W, Math.random() * H, 1, 1);
       }
 
-      // Crescent moon
-      ctx.strokeStyle = '#4a4a4a'; ctx.lineWidth = 2;
+      // Crescent moon outline - using arc path
+      ctx.strokeStyle = '#4a4a4a';
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.arc(650, 120, 50, -Math.PI * 0.7, Math.PI * 0.7, true);
-      ctx.quadraticCurveTo(630, 120, 650, 170);
+      // Outer arc (full circle)
+      ctx.arc(680, 130, 40, -Math.PI * 0.6, Math.PI * 0.6, false);
+      // Inner arc (crescent cut, going opposite direction)
+      ctx.arc(660, 130, 32, Math.PI * 0.5, -Math.PI * 0.5, true);
+      ctx.closePath();
       ctx.stroke();
 
       // Stars - 4-pointed hand-drawn style
@@ -1173,12 +1165,12 @@ function renderTemplatePreview() {
       ctx.font = contentFont + 'px "Noto Serif SC", serif';
       wrapText(ctx, content, W / 2, 340, 520, contentLineHeight, contentFont + 'px "Noto Serif SC", serif');
 
-      // Sender - right bottom
+      // Sender - right bottom (name + date only)
       ctx.textAlign = 'right';
-      ctx.fillStyle = '#8a7a6a'; ctx.font = '46px "Noto Sans SC", sans-serif';
-      ctx.fillText('—— ' + sender, W - 80, H - 120);
-      ctx.fillStyle = '#a89a8a'; ctx.font = '33px "Noto Sans SC", sans-serif';
-      ctx.fillText(time, W - 80, H - 75);
+      ctx.fillStyle = '#8a7a6a'; ctx.font = '33px "Noto Sans SC", sans-serif';
+      ctx.fillText(sender, W - 80, H - 120);
+      ctx.fillStyle = '#a89a8a'; ctx.font = '24px "Noto Sans SC", sans-serif';
+      ctx.fillText(time, W - 80, H - 85);
     },
     // 2: 温馨信纸
     () => {
@@ -1186,15 +1178,14 @@ function renderTemplatePreview() {
       ctx.fillStyle = '#fffef8';
       ctx.fillRect(0, 0, W, H);
 
-      // Horizontal ruled lines
-      ctx.strokeStyle = '#e8e0d0'; ctx.lineWidth = 1;
-      for (let y = 180; y < H - 100; y += 42) {
+      // Horizontal ruled lines (dashed) - start lower after To: label
+      ctx.strokeStyle = '#e8e0d0'; ctx.lineWidth = 1; ctx.setLineDash([8, 6]);
+      for (let y = 260; y < H - 100; y += 84) {
         ctx.beginPath(); ctx.moveTo(80, y); ctx.lineTo(W - 80, y); ctx.stroke();
       }
+      ctx.setLineDash([]);
 
-      // Red margin line
-      ctx.strokeStyle = '#e8b4b4'; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(130, 140); ctx.lineTo(130, H - 80); ctx.stroke();
+      // Red margin line - REMOVED
 
       // Top decorative banner
       ctx.fillStyle = color; ctx.globalAlpha = 0.08;
@@ -1208,31 +1199,25 @@ function renderTemplatePreview() {
       }
       ctx.globalAlpha = 1;
 
-      // "To" label
+      // "To" label (left-aligned, moved down)
       ctx.fillStyle = color; ctx.globalAlpha = 0.7;
       ctx.font = '16px "Noto Sans SC", sans-serif'; ctx.textAlign = 'left';
-      ctx.fillText('To:', 150, 170);
+      ctx.fillText('To:', 80, 190);
       ctx.globalAlpha = 1;
       ctx.fillStyle = '#3a2a1a'; ctx.font = 'bold 30px "Noto Serif SC", serif';
-      ctx.fillText(recipient, 200, 173);
+      ctx.fillText(recipient, 120, 193);
 
-      // Content on the ruled lines
+      // Content on the ruled lines (centered between lines)
       ctx.fillStyle = '#4a3a2a';
-      wrapText(ctx, content, W / 2, 220, 480, 42, contentFont + 'px "Noto Serif SC", serif');
+      ctx.textAlign = 'left';
+      wrapText(ctx, content, 80, 310, W - 160, 84, contentFont + 'px "Noto Serif SC", serif');
 
-      // Sender - right bottom
+      // Sender and date - right bottom (name + YYYY年MM月DD日 format)
       ctx.textAlign = 'right';
-      ctx.fillStyle = color; ctx.globalAlpha = 0.15;
-      ctx.beginPath();
-      ctx.moveTo(W - 80, H - 180);
-      ctx.quadraticCurveTo(W - 120, H - 150, W - 80, H - 120);
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-
-      ctx.fillStyle = '#8a7a6a'; ctx.font = '46px "Noto Sans SC", sans-serif';
-      ctx.fillText('—— ' + sender, W - 80, H - 120);
-      ctx.fillStyle = '#a89a8a'; ctx.font = '33px "Noto Sans SC", sans-serif';
-      ctx.fillText(time, W - 80, H - 75);
+      ctx.fillStyle = '#8a7a6a'; ctx.font = '33px "Noto Sans SC", sans-serif';
+      ctx.fillText(sender, W - 80, H - 120);
+      ctx.fillStyle = '#a89a8a'; ctx.font = '24px "Noto Sans SC", sans-serif';
+      ctx.fillText(time, W - 80, H - 85);
     }
   ];
   if (templates[currentTplIdx]) templates[currentTplIdx]();

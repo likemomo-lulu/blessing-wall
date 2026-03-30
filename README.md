@@ -1,4 +1,4 @@
-# 🌈 祝福墙 (Blessing Wall)
+# 🌈 BlessingWall
 
 > 轻量、免费、国内可访问的多墙祝福平台
 

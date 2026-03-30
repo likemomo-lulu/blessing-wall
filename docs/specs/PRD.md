@@ -1,4 +1,4 @@
-# PRD: 表白墙/祝福墙网站
+# PRD: BlessingWall - 多墙祝福平台
 
 ## Problem Statement
 
@@ -6,7 +6,7 @@
 
 ## Solution
 
-基于 LeanCloud 国内版构建一个多墙祝福平台：
+基于 LeanCloud 国内版构建一个多墙祝福平台 **BlessingWall**：
 
 - **多墙模式**：每个活动创建一面独立的祝福墙，通过唯一链接访问
 - **轻量前端**：React + TypeScript + Tailwind CSS，部署在 LeanCloud 静态托管
